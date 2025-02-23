@@ -22,18 +22,24 @@ class RegionParser: NSObject, XMLParserDelegate {
 
     func parser(_ parser: XMLParser, didStartElement elementName: String,
                 namespaceURI: String?, qualifiedName: String?, attributes: [String : String] = [:]) {
+
         if elementName == "region", let name = attributes["name"] {
+
             let isAvailableToDownload = calculateDownloadAvailability(attributes: attributes)
 
+            // Get parent region properties for prefix/suffix inheritance
             let parentDownloadSuffix = regionStack.last?.downloadSuffix
             let downloadSuffix = attributes["inner_download_suffix"] ?? parentDownloadSuffix
+
+            let parentDownloadPrefix = regionStack.last?.name
+            let downloadPrefix = attributes["inner_download_prefix"] ?? parentDownloadPrefix
 
             let newRegion = Region(
                 name: name,
                 type: attributes["type"],
                 translate: attributes["translate"],
                 lang: attributes["lang"],
-                downloadPrefix: attributes["inner_download_prefix"],
+                downloadPrefix: downloadPrefix,
                 downloadSuffix: downloadSuffix,
                 isAvailableToDownload: isAvailableToDownload,
                 subregions: []
@@ -56,7 +62,7 @@ class RegionParser: NSObject, XMLParserDelegate {
             }
         }
     }
-    
+
     private func calculateDownloadAvailability(attributes: [String: String]) -> Bool {
         let mapAttribute = attributes["map"]
         let typeAttribute = attributes["type"]

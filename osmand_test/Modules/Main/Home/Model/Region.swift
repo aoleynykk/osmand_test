@@ -23,9 +23,12 @@ struct Region: Identifiable {
     }
 
     var downloadURL: URL? {
-        guard isAvailableToDownload, let suffix = downloadSuffix else { return nil }
+        guard isAvailableToDownload, let preffix = downloadPrefix, let suffix = downloadSuffix else {
+            return nil
+        }
 
-        let formattedName = name.prefix(1).capitalized + name.dropFirst()
-        return URL(string: "https://download.osmand.net/download?standard=yes&file=\(formattedName)_\(suffix)_2.obf.zip")
+        let formattedPrefix = preffix.prefix(1).capitalized + preffix.dropFirst()
+        
+        return URL(string: "https://download.osmand.net/download?standard=yes&file=\(formattedPrefix)_\(name)_\(suffix)_2.obf.zip")
     }
 }
